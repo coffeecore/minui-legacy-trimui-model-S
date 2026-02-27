@@ -52,7 +52,7 @@ sys: lib
 	cp "third-party/SDL-1.2/build/.libs/libSDL-1.2.so.0.11.5" "$(PAYLOAD_PATH)/System/lib/libSDL-1.2.so.0"
 
 #--------------------------------------
-emus: gb pm ngp gg snes ps gba nes gen pce swan lynx arnold
+emus: gb pm ngp gg snes ps gba nes gen pce swan lynx arnold stella
 #--------------------------------------
 
 emu: lib
@@ -150,6 +150,13 @@ arnold: emu
 	cd ./third-party/arnold_gcw0 && make -j CROSS_COMPILE=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi- PREFIX=/opt/trimui-toolchain/usr/arm-buildroot-linux-gnueabi/sysroot/usr CC=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-gcc
 	cp -R "./third-party/arnold_gcw0/GX4000.pak" "$(PAYLOAD_PATH)/Emus"
 	cp ./third-party/arnold_gcw0/arnold "$(PAYLOAD_PATH)/Emus/GX4000.pak"
+
+stella: emu
+	mkdir -p "$(ROMS_PATH)/Atari2600/.stella/states"
+	cd ./third-party/Stella-3.9.3 && make -j CROSS_COMPILE=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi- PREFIX=/opt/trimui-toolchain/usr/arm-buildroot-linux-gnueabi/sysroot/usr CC=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-gcc CXX=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-g++ LD=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-g++
+	cp -R "./third-party/Stella-3.9.3/dist/Emus/Atari2600.pak" "$(PAYLOAD_PATH)/Emus"
+	cp ./third-party/tella-3.9.3/stella "$(PAYLOAD_PATH)/Emus/Atari2600.pak"
+
 
 #--------------------------------------
 tools: bridge commander reload stock tips # zero
