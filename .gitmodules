@@ -61,3 +61,9 @@
 [submodule "third-party/gngeo"]
 	path = third-party/gngeo
 	url = https://github.com/liartes/gngeo
+[submodule "third-party/--force"]
+	path = third-party/--force
+	url = https://github.com/coffeecore/picoarch
+[submodule "third-party/picoarch"]
+	path = third-party/picoarch
+	url = https://github.com/coffeecore/picoarch
