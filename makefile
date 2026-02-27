@@ -52,7 +52,7 @@ sys: lib
 	cp "third-party/SDL-1.2/build/.libs/libSDL-1.2.so.0.11.5" "$(PAYLOAD_PATH)/System/lib/libSDL-1.2.so.0"
 
 #--------------------------------------
-emus: gb pm ngp gg snes ps gba nes gen pce swan lynx arnold stella
+emus: gb pm ngp gg snes ps gba nes gen pce swan lynx arnold stella retro8 gngeo
 #--------------------------------------
 
 emu: lib
@@ -147,16 +147,46 @@ lynx: emu
 
 arnold: emu
 	mkdir -p "$(ROMS_PATH)/GX4000/.GX4000/saves"
-	cd ./third-party/arnold_gcw0 && make -j CROSS_COMPILE=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi- PREFIX=/opt/trimui-toolchain/usr/arm-buildroot-linux-gnueabi/sysroot/usr CC=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-gcc
+	cd ./third-party/arnold_gcw0 && grep -Rl "/opt/trimui-toolchain/" . | xargs sed -i 's|/opt/trimui-toolchain/|/opt/trimui-toolchain/usr/|g'
+	cd ./third-party/arnold_gcw0 && make -j
+	cd ./third-party/arnold_gcw0 && grep -Rl "/opt/trimui-toolchain/usr/" . | xargs sed -i 's|/opt/trimui-toolchain/usr/|/opt/trimui-toolchain/|g'
+# 	CROSS_COMPILE=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi- PREFIX=/opt/trimui-toolchain/usr/arm-buildroot-linux-gnueabi/sysroot/usr CC=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-gcc
 	cp -R "./third-party/arnold_gcw0/GX4000.pak" "$(PAYLOAD_PATH)/Emus"
 	cp ./third-party/arnold_gcw0/arnold "$(PAYLOAD_PATH)/Emus/GX4000.pak"
 
 stella: emu
 	mkdir -p "$(ROMS_PATH)/Atari2600/.stella/states"
-	cd ./third-party/Stella-3.9.3 && make -j CROSS_COMPILE=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi- PREFIX=/opt/trimui-toolchain/usr/arm-buildroot-linux-gnueabi/sysroot/usr CC=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-gcc CXX=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-g++ LD=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-g++
+	cd ./third-party/Stella-3.9.3 && grep -Rl "/opt/trimui-toolchain/" . | xargs sed -i 's|/opt/trimui-toolchain/|/opt/trimui-toolchain/usr/|g'
+	cd ./third-party/Stella-3.9.3 && make -j
+	cd ./third-party/Stella-3.9.3 && grep -Rl "/opt/trimui-toolchain/usr/" . | xargs sed -i 's|/opt/trimui-toolchain/usr/|/opt/trimui-toolchain/|g'
+# 	CROSS_COMPILE=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi- PREFIX=/opt/trimui-toolchain/usr/arm-buildroot-linux-gnueabi/sysroot/usr CC=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-gcc CXX=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-g++ LD=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-g++
 	cp -R "./third-party/Stella-3.9.3/dist/Emus/Atari2600.pak" "$(PAYLOAD_PATH)/Emus"
-	cp ./third-party/tella-3.9.3/stella "$(PAYLOAD_PATH)/Emus/Atari2600.pak"
+	cp ./third-party/Stella-3.9.3/stella "$(PAYLOAD_PATH)/Emus/Atari2600.pak"
 
+retro8: emu
+	mkdir -p "$(ROMS_PATH)/Pico-8"
+	cd ./third-party/retro8 && grep -Rl "/opt/trimui-toolchain/" . | xargs sed -i 's|/opt/trimui-toolchain/|/opt/trimui-toolchain/usr/|g'
+	cd ./third-party/retro8 && make -j
+	cd ./third-party/retro8 && grep -Rl "/opt/trimui-toolchain/usr/" . | xargs sed -i 's|/opt/trimui-toolchain/usr/|/opt/trimui-toolchain/|g'
+# 	CROSS_COMPILE=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi- PREFIX=/opt/trimui-toolchain/usr/arm-buildroot-linux-gnueabi/sysroot/usr CC=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-gcc CXX=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-g++ LD=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-g++
+	cp -R "paks/Pico-8.pak" "$(PAYLOAD_PATH)/Emus"
+	cp ./third-party/retro8/retro8 "$(PAYLOAD_PATH)/Emus/Pico-8.pak"
+	cp ./third-party/retro8/data/api.lua "$(PAYLOAD_PATH)/Emus/Pico-8.pak"
+
+gngeo: emu
+	mkdir -p "$(ROMS_PATH)/NEOGEO"
+	cd ./third-party/SDL-1.2 && grep -Rl "/opt/trimui-toolchain/" . | xargs sed -i 's|/opt/trimui-toolchain/|/opt/trimui-toolchain/usr/|g'
+	cd ./third-party/SDL-1.2 && ./make.sh
+	cd ./third-party/SDL-1.2 && grep -Rl "/opt/trimui-toolchain/usr/" . | xargs sed -i 's|/opt/trimui-toolchain/usr/|/opt/trimui-toolchain/|g'
+
+	cd ./third-party/gngeo && grep -Rl "/opt/trimui-toolchain/" . | xargs sed -i 's|/opt/trimui-toolchain/|/opt/trimui-toolchain/usr/|g'
+	cd ./third-party/gngeo && ./configure --host=arm --with-sdl-prefix=/opt/trimui-toolchain/usr/arm-buildroot-linux-gnueabi/sysroot/usr CFLAGS="-I/opt/trimui-toolchain/usr/arm-buildroot-linux-gnueabi/sysroot/usr/include -ldl" CC=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-gcc
+	cd ./third-party/gngeo && make clean && make -j DESTDIR=./dist install
+	cd ./third-party/gngeo && grep -Rl "/opt/trimui-toolchain/usr/" . | xargs sed -i 's|/opt/trimui-toolchain/usr/|/opt/trimui-toolchain/|g'
+# 	CROSS_COMPILE=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi- PREFIX=/opt/trimui-toolchain/usr/arm-buildroot-linux-gnueabi/sysroot/usr CC=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-gcc CXX=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-g++ LD=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-g++ && make -j CROSS_COMPILE=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi- PREFIX=/opt/trimui-toolchain/usr/arm-buildroot-linux-gnueabi/sysroot/usr CC=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-gcc CXX=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-g++ LD=/opt/trimui-toolchain/usr/bin/arm-buildroot-linux-gnueabi-g++ DESTDIR=./dist install
+	cp -R "paks/NEOGEO.pak" "$(PAYLOAD_PATH)/Emus"
+	cp ./third-party/gngeo/src/dist/usr/local/bin/gngeo "$(PAYLOAD_PATH)/Emus/NEOGEO-8.pak"
+	cp ./third-party/gngeo/dist/usr/local/share/gngeo/gngeo_data.zip "$(PAYLOAD_PATH)/Emus/NEOGEO.pak"
 
 #--------------------------------------
 tools: bridge commander reload stock tips # zero
